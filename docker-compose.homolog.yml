@@ -1,0 +1,19 @@
+version: '3.8'
+services:
+  app:
+    ports:
+      - "8081:8080" # Usaremos uma porta diferente (8081) para não conflitar com o ambiente de dev
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/homolog_db
+      - DATABASE_USERNAME=homolog_user
+      - DATABASE_PASSWORD=homolog_pass
+  db:
+    environment:
+      - POSTGRES_DB=homolog_db
+      - POSTGRES_USER=homolog_user
+      - POSTGRES_PASSWORD=homolog_pass
+    volumes:
+      - homolog_data:/var/lib/postgresql/data # Volume de dados separado
+
+volumes:
+  homolog_data:
