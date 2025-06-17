@@ -1,0 +1,27 @@
+name: CI Pipeline - GCMS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Clonar repositório
+      uses: actions/checkout@v3
+
+    - name: Instalar Java 17
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: '17'
+
+    - name: Construir projeto com Maven
+      run: ./mvnw clean package -DskipTests=true
+
+    - name: Verificar estrutura da aplicação
+      run: ls -l target/
