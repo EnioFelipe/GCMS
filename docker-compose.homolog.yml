@@ -1,19 +1,34 @@
-version: '3.8'
+version: '3.9'
+
 services:
-  app:
-    ports:
-      - "8081:8080" # Usaremos uma porta diferente (8081) para não conflitar com o ambiente de dev
+  dbpostgres:
+    # Sobrescreve as variáveis de ambiente para criar um banco de dados de homologação
     environment:
-      - DATABASE_URL=jdbc:postgresql://db:5432/homolog_db
+      POSTGRES_USER: homolog_user
+      POSTGRES_PASSWORD: homolog_pass
+      POSTGRES_DB: homologdb
+    # Adiciona um volume nomeado e isolado para os dados de homologação
+    volumes:
+      - homolog_data:/var/lib/postgresql/data
+
+  adminer:
+    # Mapeia a porta do Adminer para 9001 para não conflitar com o ambiente de dev
+    ports:
+      - "9001:8080"
+  
+  cadpessoas-web:
+    # Mapeia as portas da aplicação para uma faixa diferente, evitando conflitos
+    ports:
+      - "8088:8080"      # Porta da aplicação
+      - "8188:8181"      # Porta HTTPS
+      - "4849:4848"      # Porta Admin
+      - "9099:9009"      # Porta Debug
+    # Atualiza as variáveis de ambiente da aplicação para conectar ao banco de homologação
+    environment:  
+      - DATABASE_URL=jdbc:postgresql://dbpostgres:5432/homologdb
       - DATABASE_USERNAME=homolog_user
       - DATABASE_PASSWORD=homolog_pass
-  db:
-    environment:
-      - POSTGRES_DB=homolog_db
-      - POSTGRES_USER=homolog_user
-      - POSTGRES_PASSWORD=homolog_pass
-    volumes:
-      - homolog_data:/var/lib/postgresql/data # Volume de dados separado
 
+# Declara o novo volume para garantir que os dados de homologação sejam persistidos separadamente
 volumes:
   homolog_data:
