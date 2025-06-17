@@ -20,11 +20,8 @@ jobs:
         distribution: 'temurin'
         java-version: '17'
 
-    - name: Dar permissão de execução ao mvnw
-      run: chmod +x mvnw
-
     - name: Construir projeto com Maven
-      run: ./mvnw clean package -DskipTests=true
+      run: mvn clean package -DskipTests=true
 
     - name: Verificar estrutura da aplicação
       run: ls -l target/
