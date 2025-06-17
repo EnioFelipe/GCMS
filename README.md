@@ -1,72 +1,133 @@
+
 # Cadastro de Clientes - Pessoas
 
-Para executar este app você deve configurar o banco de dados PostgreSQL. Este pode ser configurado localmente ou por meio de docker.
-Caso opte por docker, execute o comando:
+Aplicação Java EE para cadastro de pessoas, utilizando JSF e integração com banco de dados PostgreSQL. O projeto pode ser executado localmente ou em produção via Docker.
 
-####################################################
+---
 
-docker run -it  --rm   --name myPostgresDb    -p 5432:5432     -e POSTGRES_USER=postgres     -e POSTGRES_PASSWORD=postgres     -e POSTGRES_DB=localdb   -d  postgres
+## 🚀 Como executar o projeto localmente
 
-####################################################
+### 1. Suba o banco de dados PostgreSQL
 
-Para executar o projeto, verifique se o arquivo mvnw é executável, caso não seja, voce deve executar primeiro `chmod +x mvnw` (linux).
+Você pode utilizar uma instância local ou iniciar via Docker:
 
+```bash
+docker run -it --rm   --name myPostgresDb   -p 5432:5432   -e POSTGRES_USER=postgres   -e POSTGRES_PASSWORD=postgres   -e POSTGRES_DB=localdb   -d postgres
+```
 
-############### No linux utilize ################
+---
 
+### 2. Compile e execute o projeto
+
+#### 🔧 Linux
+
+```bash
+chmod +x mvnw         # (caso o mvnw não seja executável)
 ./mvnw clean package payara-micro:start
+```
 
-#################################################
+Para pular os testes:
 
-Para nao executar testes, utilize: ./mvnw clean package -DskipTests=true
+```bash
+./mvnw clean package -DskipTests=true
+```
 
-############### No windos utilize ################
+#### 🪟 Windows
 
+```cmd
 mvnw.cmd clean package payara-micro:start
+```
 
-#################################################
+⚠️ **Talvez seja necessário configurar a variável de ambiente `JAVA_HOME`**. Exemplo:
 
+```cmd
+SET JAVA_HOME="C:\Progra~1\Java\jdk-20"
+```
 
-Talvez seja necessário configurar a variável JAVA_HOME. Para isso, verifique onde sua jdk está instalada e informe a variável utilizando o path resumido (dir /x). Exemplo:
+---
 
-SET  JAVA_HOME="C:\Progra~1\Java\jdk-20"
+### 🌐 Acesse a aplicação
 
-Após iniciado, voce poderá acessar o projeto em http://localhost:8080.
+Após a execução, acesse:  
+[http://localhost:8080](http://localhost:8080)
 
-===========  EM PRODUCAO ======
-Para executar em producao voce devera configurar as variaveis de ambiente: DATABASE_URL, DATABASE_USERNAME e DATABASE_PASSWORD
+---
 
-Exemplos:
-DATABASE_URL="jdbc:postgresql://127.0.0.1:5432/localdb" 
-DATABASE_USERNAME="postgres" -
+## 🏗️ Execução em Produção
+
+Para rodar em produção, é necessário definir as seguintes variáveis de ambiente:
+
+```env
+DATABASE_URL="jdbc:postgresql://127.0.0.1:5432/localdb"
+DATABASE_USERNAME="postgres"
 DATABASE_PASSWORD="postgres"
+```
 
-Há duas maneiras de alocar em producao (1 executar arquivo.jar e 2 gerar container):
-1. Executar diretamente o payara-micro ou outro ee server compatível
+---
 
-%> java -jar <payara-micro> Cadastro-Pessoas.war
+### Opção 1 – Executar o .WAR com Payara Micro
 
-O arquivo .war encontra-se dentro da pasta target.
+Após o build, execute:
 
-------------- -------- -------------- ------------- ------------- ------------- -------------
+```bash
+java -jar <payara-micro>.jar target/Cadastro-Pessoas.war
+```
 
-2. Entregar o projeto via Docker. Para construir a imagem Docker, execute os seguintes comandos no diretório onde este arquivo reside:
+---
 
-#################################################
+### Opção 2 – Executar com Docker
 
-./mvnw clean package 
+#### 🔨 Build da imagem
 
+```bash
+./mvnw clean package
 docker build -t cadpessoas:v1 .
+```
 
-Para rodar a imagem e configurar as variaveis de ambiente, utilize o comando 
+#### ▶️ Rodar a imagem
 
-docker run -it --rm -e DATABASE_URL="jdbc:postgresql://<url do banco de dados>" -e DATABASE_USERNAME="<nome do usuario>" -e DATABASE_PASSWORD="<senha do usuario>" -p 8080:8080 cadpessoas:v1
+```bash
+docker run -it --rm   -e DATABASE_URL="jdbc:postgresql://<url_do_banco>"   -e DATABASE_USERNAME="<usuario>"   -e DATABASE_PASSWORD="<senha>"   -p 8080:8080 cadpessoas:v1
+```
 
-Exemplo de comando completo:
-docker run -it --rm -e DATABASE_URL="jdbc:postgresql://192.168.0.110:5432/localdb" -e DATABASE_USERNAME="postgres" -e DATABASE_PASSWORD="postgres" -p 8080:8080 cadpessoas:v1
+Exemplo completo:
 
+```bash
+docker run -it --rm   -e DATABASE_URL="jdbc:postgresql://192.168.0.110:5432/localdb"   -e DATABASE_USERNAME="postgres"   -e DATABASE_PASSWORD="postgres"   -p 8080:8080 cadpessoas:v1
+```
 
-Assim que a execução começar, você poderá acessar o projeto em http://localhost:8080/Cadastro-Pessoas
+Acesse o sistema em:  
+[http://localhost:8080/Cadastro-Pessoas](http://localhost:8080/Cadastro-Pessoas)
 
-Exemplo de configuração para o bd em produção:
-docker run -it  --rm   --name ProductPostgresDb    -p 5432:5432     -e POSTGRES_USER=postgres     -e POSTGRES_PASSWORD=sudodb     -e POSTGRES_DB=customerdb   -e PGDATA=/var/lib/postgresql/data/pgdata -v C:/Users/UTFPR/Downloads/dados:/var/lib/postgresql/data -d postgres
+---
+
+### 🗃️ Exemplo de Banco de Dados em Produção com volume persistente
+
+```bash
+docker run -it --rm   --name ProductPostgresDb   -p 5432:5432   -e POSTGRES_USER=postgres   -e POSTGRES_PASSWORD=sudodb   -e POSTGRES_DB=customerdb   -e PGDATA=/var/lib/postgresql/data/pgdata   -v C:/Users/UTFPR/Downloads/dados:/var/lib/postgresql/data   -d postgres
+```
+
+---
+
+## ✅ Requisitos
+
+- Java 17+
+- Maven
+- Docker (opcional)
+- PostgreSQL
+
+---
+
+## 📁 Estrutura do Projeto
+
+```
+src/
+ ├─ main/
+ │   ├─ java/         # Backend (Java EE, JPA, REST)
+ │   ├─ resources/    # Configurações e SQL
+ │   └─ webapp/       # Interface JSF
+ └─ test/             # Testes automatizados
+```
+
+---
+
